@@ -101,13 +101,26 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_TIMEZONE = 'Asia/Kolkata'
+CELERY_BEAT_SCHEDULE = {
+    'upadte-every-30-sec': {
+        'task': 'fetch_and_update',
+        'schedule': 30.0,
+    },
+}
+
+
+# Custom settings
+YT_DATA_API_KEYS = ['AIzaSyDOq977tqm05ZW4IjHJm1fBpiucT3HghfI']
+CURRENT_API_KEY = YT_DATA_API_KEYS[0] 
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 

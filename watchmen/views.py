@@ -5,8 +5,6 @@ from rest_framework import pagination
 from watchmen.serializers import VideoSerializer
 from watchmen.models import Video
 
-# remove this after adding cron job
-from watchmen.utils import fetch_youtube_data
 
 class VideoListPagination(pagination.PageNumberPagination):
     page_size = 10
@@ -16,4 +14,4 @@ class VideoList(viewsets.GenericViewSet, mixins.ListModelMixin):
 
     serializer_class = VideoSerializer
     pagination_class = VideoListPagination
-    queryset = Video.objects.all()
+    queryset = Video.objects.all().order_by('-published_at')
