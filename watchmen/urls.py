@@ -4,7 +4,7 @@ from watchmen import views
 
 
 router = routers.DefaultRouter()
-router.register(r'videos', views.VideoViewSet, basename='video')
+router.register(r'videos', views.VideoList, basename='video')
 
 urlpatterns = [
     path('', include(router.urls)),
