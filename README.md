@@ -3,6 +3,12 @@
 ## Overview
 An app to get the latest videos on predefined search query. This app provides an API for the latest videos sorted in reverse chronological order of their publishing date-time from YouTube for a given tag/search query in a paginated response.
 
+### Features
+- Paginated API response
+- Async YT Data fetch with the help of celery and redis
+- API Key rotation in case of quota exhaustion
+- UI to display all the videos
+
 ### Screenshots
 ![alt screenshot](.github/images/ytw-ss1.png)
 
