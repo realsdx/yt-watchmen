@@ -6,6 +6,12 @@ from watchmen.serializers import VideoSerializer
 from watchmen.models import Video
 
 
+def index(request):
+    queryset = Video.objects.all().order_by('-published_at')
+    context = {'videolist' : queryset}
+    return render(request, 'watchmen/index.html', context=context)
+
+
 class VideoListPagination(pagination.PageNumberPagination):
     page_size = 10
 
