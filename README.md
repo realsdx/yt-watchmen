@@ -7,8 +7,8 @@ An app to get the latest videos on predefined search query. This app provides an
 ![alt screenshot](.github/images/ytw-ss1.png)
 
 ### API endpoints
-
-
+- `GET /api/videos/`  -
+This endpoint returns a list of all videos in the database in a paginated resposne.
 
 ## Build Guide
 
@@ -48,7 +48,16 @@ To check if redis is working correctly or not:
 2. Type `ping`
 3. If it returns `PONG`, then your redis-broker server is running fine.
 
-### Run
+### Configuration
+This project uses `python-decouple` for dotenv files
+```shell
+cp .env.example .env
+```
+Then `.env` according to the needs
+
+*For the ease of configuration, I have kept defaults in all configurations, so it will work even if you ignore this step*
+
+### Run the app
 Steps to follow to run the app
 ```shell
 python manage.py migrate
@@ -65,8 +74,4 @@ celery -A YoutubeWatchmen worker -B -E -l INFO
  - Gunicorn as WSGI server
  - PostgreSQL as DB
  - Services (gunicorn, celery, nginx) can be managed by systemctl units.
-
-## Configuration
-
-
-## Scaling
+ - Multiple workers for can be used with celery for scaling
