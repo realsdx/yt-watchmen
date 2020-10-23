@@ -14,10 +14,11 @@ def fetch_youtube_data():
     api_service_name = "youtube"
     api_version = "v3"
 
-    youtube = googleapiclient.discovery.build(api_service_name,
-                                              api_version,
-                                              developerKey=settings.CURRENT_API_KEY,
-                                              cache_discovery=False)
+    youtube = googleapiclient.discovery.build(
+        api_service_name,
+        api_version,
+        developerKey=settings.CURRENT_API_KEY,
+        cache_discovery=False)
 
     request = youtube.search().list(part="snippet",
                                     maxResults=25,
@@ -33,21 +34,19 @@ def fetch_youtube_data():
         if "you have exceeded" in e._get_reason():
             print("WARNING: API Quota exceeded")
             rotate_api_key()
-    finally:
+        else:
+            print(f"ERROR: {e._get_reason()}")
+            return
+    except Exception as e:
+        print(f"ERROR: {e._get_reason()}")
         return
-        
-    # # check for errors in results also
-    # if not results:
-    #     error = response.get("error", None)
-    #     if not error:
-    #         print(f"An unknown error occured")
-    #     reason = error["errors"][0]["reason"]
-    #     if "quotaExceeded" in reason:
-    #         print("WARNING: API Quota exceeded")
-    #         rotate_api_key()
-    #     else:
-    #         print(f"ERROR in API Request: {reason}")
 
+    # if no data received return
+    if not results:
+        print("DEBUG: Got no data")
+        return
+
+    count = 0
     for result in results:
         video_id = result["id"]["videoId"]
         title = result["snippet"]["title"]
@@ -55,15 +54,14 @@ def fetch_youtube_data():
         published_at = result["snippet"]["publishedAt"]
         thumbnail_url = result["snippet"]["thumbnails"]["default"]["url"]
 
-        
         created = update_to_db(video_id, title, description, published_at,
                                thumbnail_url)
-        print(f"TASK Done, {created} {title}")
-                            
-        # if data is not created 
+
+        # if data is not created
         if not created:
-            break
-        print(f"Created on db: {video_id}")
+            continue
+        count += 1
+    print(f"{count} new videos added")
 
 
 def update_to_db(video_id, title, description, published_at, thumbnail_url):
@@ -80,21 +78,24 @@ def update_to_db(video_id, title, description, published_at, thumbnail_url):
             published_at=published_datetime,
             thumbnail_url=thumbnail_url)
     except Exception as e:
-        print("ERROR ==== ", e)
+        print("ERROR: ", e)
 
     return created
 
 
 def rotate_api_key():
     api_keys = settings.YT_DATA_API_KEYS
-    api_key_in_use = settings.CURENT_API_KEY
+    api_key_in_use = settings.CURRENT_API_KEY
+    print(f"Current API KEY: {api_key_in_use}")
 
     # rotate only when more than one api key
     if len(api_keys) > 1:
         ind = api_keys.index(api_key_in_use)
-        ind = (ind + 1)%len(api_keys)
+        ind = (ind + 1) % len(api_keys)
     else:
-        print("DEBUG: No API Key Rotation performed. As there is only one key")
+        print(
+            "WARNING: No API Key Rotation performed. As there is only one key")
         return
 
     settings.CURRENT_API_KEY = api_keys[ind]
+    print(f"Updated KEY: {settings.CURRENT_API_KEY}")
